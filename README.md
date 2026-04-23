@@ -1,2 +1,1 @@
-Read Me
-Literature across nations and history span on pretty much same ideas, descriptions, and feelings. To compare great literature minds with their masterpieces written inspired by life, I decided to experiment with their language patterns.
+Literature across nations and history span on pretty much same ideas, descriptions, and feelings. To compare great literature minds with their masterpieces written inspired by life, I decided to experiment with their language patterns. I seek to make a tool that would allow to see contrast.
