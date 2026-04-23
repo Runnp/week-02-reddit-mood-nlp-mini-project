@@ -1,7 +1,11 @@
 jupyter
+praw
+python-dotenv
 nltk
 pandas
+numpy
 matplotlib
 seaborn
 wordcloud
 scikit-learn
+tensorflow
