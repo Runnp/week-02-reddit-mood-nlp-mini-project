@@ -157,7 +157,3 @@ Run notebooks in order from the `notebooks/` folder:
 - This project is for educational NLP study only — not clinical research
 
 ---
-
-## Author
-
-Built as Biweek 2 of a personal NLP learning series.
