@@ -149,11 +149,3 @@ Run notebooks in order from the `notebooks/` folder:
 
 ---
 
-## Notes on data and ethics
-
-- All data is collected from public Reddit posts via the official API
-- No usernames, profile data, or identifying information is stored
-- Raw data is gitignored and stays local on your machine
-- This project is for educational NLP study only — not clinical research
-
----
