@@ -159,7 +159,7 @@ Run notebooks in order from the `notebooks/` folder:
 ---
 
 ## Author
-
+Made by Runnp
 Built as Biweek 2 of a personal NLP learning series.
 
 
