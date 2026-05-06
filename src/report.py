@@ -145,11 +145,12 @@ def run_report():
     # ── Notebook status ────────────────────────────
     section("Notebook status")
     notebooks = [
-        "00_setup", "01_fetch", "02_clean", "03_sentiment",
-        "04_vocab", "05_themes", "06_tfidf", "07_similarity",
-        "08_classify_prep", "09_upvotes", "10_comments",
-        "11_classifier_sklearn", "12_tensorflow", "13_predict",
-        "14_lstm", "15_model_comparison", "16_temporal_classifier",
+    "00_setup", "01_fetch", "02_clean", "03_sentiment",
+    "04_vocab", "05_themes", "06_tfidf", "07_similarity",
+    "08_classify_prep", "09_upvotes", "10_comments",
+    "11_classifier_sklearn", "12_tensorflow", "13_predict",
+    "14_lstm", "15_model_comparison", "16_temporal_classifier",
+    "17_summary", "18_misclassified", "19_confidence",
     ]
     for nb in notebooks:
         path = f"notebooks/{nb}.ipynb"
