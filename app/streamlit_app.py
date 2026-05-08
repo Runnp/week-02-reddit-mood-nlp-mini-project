@@ -25,7 +25,7 @@ page = st.sidebar.radio("Navigate", [
     "Word explorer",
     "Live predictor",
 ])
-
+        
 # ── Load data ─────────────────────────────────────
 @st.cache_data
 def load_data():
@@ -115,3 +115,71 @@ sk, tf_data, lstm = load_models()
     # else:
     #     st.warning("No data found — run notebooks or generate mock data first.")
     #     st.code("python src/mock_data.py")
+
+
+# elif page == "Mood over time":
+#     st.title("Mood over time")
+#     st.markdown("Average VADER compound score per month across both communities.")
+
+#     if df is not None:
+#         # filter controls
+#         col1, col2 = st.columns(2)
+#         with col1:
+#             subs = st.multiselect("Subreddits", ["depression","happy"],
+#                                    default=["depression","happy"])
+#         with col2:
+#             months = sorted(df["month"].dropna().unique())
+#             month_range = st.select_slider("Month range",
+#                                             options=months,
+#                                             value=(months[0], months[-1]))
+
+#         filtered = df[
+#             (df["subreddit"].isin(subs)) &
+#             (df["month"] >= month_range[0]) &
+#             (df["month"] <= month_range[1])
+#         ]
+
+#         monthly = (
+#             filtered.groupby(["subreddit","month"])["vader_compound"]
+#             .mean().reset_index()
+#         )
+
+#         # line chart
+#         fig, ax = plt.subplots(figsize=(12, 4))
+#         colors  = {"depression":"#E07070","happy":"#7BC67E"}
+#         for sub, group in monthly.groupby("subreddit"):
+#             ax.plot(group["month"], group["vader_compound"],
+#                     label=f"r/{sub}", color=colors.get(sub,"#555555"),
+#                     linewidth=2, marker="o", markersize=4)
+#         ax.axhline(0, color="#cccccc", linewidth=0.8, linestyle="--")
+#         ax.set_ylabel("avg VADER compound score")
+#         ax.legend(frameon=False)
+#         ax.spines[["top","right"]].set_visible(False)
+#         plt.xticks(rotation=45, ha="right")
+#         plt.tight_layout()
+#         st.pyplot(fig)
+
+#         st.divider()
+
+#         # monthly stats table
+#         st.subheader("Monthly breakdown")
+#         pivot = monthly.pivot(index="month", columns="subreddit",
+#                                values="vader_compound").round(3)
+#         st.dataframe(pivot, use_container_width=True)
+
+#         # most positive and negative months
+#         st.divider()
+#         col_a, col_b = st.columns(2)
+#         for col, sub in zip([col_a, col_b], ["depression","happy"]):
+#             sub_monthly = monthly[monthly["subreddit"]==sub]
+#             if len(sub_monthly):
+#                 best  = sub_monthly.loc[sub_monthly["vader_compound"].idxmax()]
+#                 worst = sub_monthly.loc[sub_monthly["vader_compound"].idxmin()]
+#                 with col:
+#                     st.subheader(f"r/{sub}")
+#                     st.metric("Best month",  best["month"],
+#                                f"{best['vader_compound']:+.3f}")
+#                     st.metric("Worst month", worst["month"],
+#                                f"{worst['vader_compound']:+.3f}")
+#     else:
+#         st.warning("No data found.")
