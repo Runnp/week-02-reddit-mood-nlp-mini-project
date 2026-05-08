@@ -183,3 +183,79 @@ sk, tf_data, lstm = load_models()
 #                                f"{worst['vader_compound']:+.3f}")
 #     else:
 #         st.warning("No data found.")
+
+# elif page == "Live predictor":
+#     st.title("Live mood predictor")
+#     st.markdown("Type any text and get mood predictions from both models.")
+
+#     col1, col2 = st.columns([2, 1])
+
+#     with col1:
+#         user_input = st.text_area("Enter text", height=150,
+#                                    placeholder="e.g. I feel completely lost and alone today...")
+
+#     with col2:
+#         st.markdown("**Examples to try:**")
+#         examples = [
+#             "I can't get out of bed anymore",
+#             "Got the job I've been working for",
+#             "Just existing today, not great not terrible",
+#             "Six months sober, never thought I'd make it",
+#             "Everything feels pointless and heavy",
+#         ]
+#         for ex in examples:
+#             if st.button(ex, key=ex):
+#                 user_input = ex
+
+#     if st.button("🔍 Predict mood", type="primary") and user_input and user_input.strip():
+#         cleaned = clean_text(user_input)
+#         st.divider()
+
+#         col_sk, col_lstm = st.columns(2)
+#         mood_emoji = {"positive":"🟢","neutral":"⚪","negative":"🔴"}
+
+#         # sklearn
+#         with col_sk:
+#             st.subheader("sklearn model")
+#             if sk is not None:
+#                 vec   = sk["vectorizer"].transform([cleaned])
+#                 pred  = sk["model"].predict(vec)[0]
+#                 proba = sk["model"].predict_proba(vec)[0]
+#                 label = sk["classes"][pred]
+#                 st.markdown(f"### {mood_emoji.get(label,'')} {label.upper()}")
+#                 conf_df = pd.DataFrame({
+#                     "confidence": proba
+#                 }, index=sk["classes"])
+#                 st.bar_chart(conf_df)
+#             else:
+#                 st.warning("sklearn model not found.")
+
+#         # lstm
+#         with col_lstm:
+#             st.subheader("LSTM model")
+#             if lstm is not None:
+#                 seq   = tf_data["tokenizer"].texts_to_sequences([cleaned])
+#                 pad   = pad_sequences(seq, maxlen=tf_data["max_len"],
+#                                        padding="post", truncating="post")
+#                 prob  = lstm.predict(pad, verbose=0)[0]
+#                 pred  = prob.argmax()
+#                 label_lstm = tf_data["classes"][pred]
+#                 st.markdown(f"### {mood_emoji.get(label_lstm,'')} {label_lstm.upper()}")
+#                 conf_df2 = pd.DataFrame({
+#                     "confidence": prob
+#                 }, index=tf_data["classes"])
+#                 st.bar_chart(conf_df2)
+#             else:
+#                 st.warning("LSTM model not found.")
+
+#         # agreement check
+#         st.divider()
+#         if sk is not None and lstm is not None:
+#             if label == label_lstm:
+#                 st.success(f"Both models agree — **{label.upper()}**")
+#             else:
+#                 st.info(f"Models disagree — sklearn: **{label}** | LSTM: **{label_lstm}**")
+
+#         # cleaned text peek
+#         with st.expander("See cleaned text"):
+#             st.code(cleaned)
