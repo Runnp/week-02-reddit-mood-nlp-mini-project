@@ -6,8 +6,8 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
-import tensorflow as tf
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+#import tensorflow as tf
+#from tensorflow.keras.preprocessing.sequence import pad_sequences
 from preprocess import clean_text, tokenize
 
 st.set_page_config(
@@ -41,7 +41,7 @@ def load_models():
             sk = pickle.load(f)
         with open("data/clean/tf_tokenizer.pkl", "rb") as f:
             tf_data = pickle.load(f)
-        lstm = tf.keras.models.load_model("data/clean/lstm_mood_model")
+#        lstm = tf.keras.models.load_model("data/clean/lstm_mood_model")
         return sk, tf_data, lstm
     except Exception:
         return None, None, None
@@ -50,112 +50,68 @@ df      = load_data()
 sk, tf_data, lstm = load_models()
 
 # ── Pages ─────────────────────────────────────────
-if page == "Overview":
-    st.title("Reddit Mood Shift NLP")
-    st.markdown("Comparing emotional language patterns across two communities.")
+    # if page == "Overview":
+    # st.title("Reddit Mood Shift NLP")
+    # st.markdown("Comparing emotional language patterns across **r/depression** and **r/happy** — 500 posts each, past year.")
 
-    if df is not None:
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Total posts",       len(df))
-        col2.metric("r/depression",       len(df[df["subreddit"]=="depression"]))
-        col3.metric("r/happy",            len(df[df["subreddit"]=="happy"]))
-        col4.metric("Months covered",     df["month"].nunique())
+    # if df is not None:
+    #     # metrics row
+    #     col1, col2, col3, col4 = st.columns(4)
+    #     col1.metric("Total posts",     len(df))
+    #     col2.metric("r/depression",    len(df[df["subreddit"]=="depression"]))
+    #     col3.metric("r/happy",         len(df[df["subreddit"]=="happy"]))
+    #     col4.metric("Months covered",  df["month"].nunique())
 
-        st.subheader("Mood distribution")
-        dist = df.groupby(["subreddit","mood_label"]).size().unstack(fill_value=0)
-        st.bar_chart(dist.T)
-    else:
-        st.warning("No data found. Run the notebooks first or generate mock data.")
-        st.code("python src/mock_data.py")
+    #     st.divider()
 
-elif page == "Mood over time":
-    st.title("Mood over time")
+    #     # sentiment gap
+    #     col_a, col_b = st.columns(2)
+    #     with col_a:
+    #         st.subheader("Avg sentiment score")
+    #         avgs = df.groupby("subreddit")["vader_compound"].mean()
+    #         fig, ax = plt.subplots(figsize=(5, 3))
+    #         colors  = ["#E07070" if s=="depression" else "#7BC67E"
+    #                    for s in avgs.index]
+    #         bars = ax.bar(avgs.index, avgs.values,
+    #                       color=colors, edgecolor="white", linewidth=0.5)
+    #         ax.axhline(0, color="#cccccc", linewidth=0.8, linestyle="--")
+    #         ax.set_ylabel("compound score")
+    #         ax.spines[["top","right"]].set_visible(False)
+    #         for bar, val in zip(bars, avgs.values):
+    #             ax.text(bar.get_x() + bar.get_width()/2,
+    #                     bar.get_height() + 0.005,
+    #                     f"{val:+.3f}", ha="center", va="bottom", fontsize=10)
+    #         plt.tight_layout()
+    #         st.pyplot(fig)
 
-    if df is not None:
-        monthly = (
-            df.groupby(["subreddit","month"])["vader_compound"]
-            .mean().reset_index()
-        )
-        fig, ax = plt.subplots(figsize=(12, 4))
-        colors = {"depression": "#E07070", "happy": "#7BC67E"}
-        for sub, group in monthly.groupby("subreddit"):
-            ax.plot(group["month"], group["avg_compound"] if "avg_compound"
-                    in group else group["vader_compound"],
-                    label=f"r/{sub}", color=colors[sub], linewidth=2,
-                    marker="o", markersize=4)
-        ax.axhline(0, color="#cccccc", linewidth=0.8, linestyle="--")
-        ax.set_ylabel("avg VADER compound")
-        ax.legend(frameon=False)
-        ax.spines[["top","right"]].set_visible(False)
-        plt.xticks(rotation=45, ha="right")
-        plt.tight_layout()
-        st.pyplot(fig)
-    else:
-        st.warning("No data found.")
+    #     with col_b:
+    #         st.subheader("Mood distribution")
+    #         dist = (
+    #             df.groupby(["subreddit","mood_label"])
+    #             .size().unstack(fill_value=0)
+    #         )
+    #         dist_pct = dist.div(dist.sum(axis=1), axis=0).round(3)
+    #         st.dataframe(dist_pct, use_container_width=True)
+    #         st.caption("Proportion of posts per mood label per subreddit.")
 
-elif page == "Word explorer":
-    st.title("Word explorer")
+    #     st.divider()
 
-    if df is not None:
-        sub = st.selectbox("Choose subreddit", ["depression", "happy"])
-        from collections import Counter
-        text   = " ".join(df[df["subreddit"]==sub]["clean_text"].dropna())
-        counts = Counter(text.split()).most_common(30)
-        words, freqs = zip(*counts)
+    #     # avg post length
+    #     st.subheader("Avg post length")
+    #     if "token_count" in df.columns:
+    #         col_c, col_d = st.columns(2)
+    #         for col, sub in zip([col_c, col_d], ["depression","happy"]):
+    #             avg = df[df["subreddit"]==sub]["token_count"].mean()
+    #             col.metric(f"r/{sub}", f"{avg:.0f} tokens/post")
 
-        fig, ax = plt.subplots(figsize=(10, 7))
-        ax.barh(words[::-1], freqs[::-1],
-                color="#E07070" if sub=="depression" else "#7BC67E",
-                edgecolor="white", linewidth=0.5)
-        ax.set_title(f"r/{sub} — top 30 words", fontsize=13)
-        ax.spines[["top","right"]].set_visible(False)
-        plt.tight_layout()
-        st.pyplot(fig)
-    else:
-        st.warning("No data found.")
-
-elif page == "Live predictor":
-    st.title("Live mood predictor")
-    st.markdown("Type any text and see the predicted mood.")
-
-    user_input = st.text_area("Enter text here", height=120,
-                               placeholder="e.g. I feel completely lost today...")
-
-    if st.button("Predict") and user_input.strip():
-        cleaned = clean_text(user_input)
-
-        if sk is not None:
-            vec   = sk["vectorizer"].transform([cleaned])
-            pred  = sk["model"].predict(vec)[0]
-            proba = sk["model"].predict_proba(vec)[0]
-            label = sk["classes"][pred]
-
-            st.subheader("sklearn result")
-            color = {"positive":"🟢","neutral":"⚪","negative":"🔴"}
-            st.markdown(f"### {color.get(label,'')} {label.upper()}")
-
-            conf_df = pd.DataFrame({
-                "mood":       sk["classes"],
-                "confidence": proba,
-            }).set_index("mood")
-            st.bar_chart(conf_df)
-
-        if lstm is not None:
-            seq  = tf_data["tokenizer"].texts_to_sequences([cleaned])
-            pad  = pad_sequences(seq, maxlen=tf_data["max_len"],
-                                  padding="post", truncating="post")
-            prob = lstm.predict(pad, verbose=0)[0]
-            pred = prob.argmax()
-            label_lstm = tf_data["classes"][pred]
-
-            st.subheader("LSTM result")
-            st.markdown(f"### {color.get(label_lstm,'')} {label_lstm.upper()}")
-
-            conf_df2 = pd.DataFrame({
-                "mood":       tf_data["classes"],
-                "confidence": prob,
-            }).set_index("mood")
-            st.bar_chart(conf_df2)
-
-        if sk is None and lstm is None:
-            st.warning("Models not found. Run the classifier notebooks first.")
+    #     # raw data peek
+    #     st.divider()
+    #     st.subheader("Raw data sample")
+    #     st.dataframe(
+    #         df[["subreddit","title","mood_label",
+    #             "vader_compound","month"]].head(10),
+    #         use_container_width=True
+    #     )
+    # else:
+    #     st.warning("No data found — run notebooks or generate mock data first.")
+    #     st.code("python src/mock_data.py")
