@@ -92,4 +92,3 @@ st.dataframe(
 
 st.caption("This page is for understanding dataset structure before modeling.")
 
-# $env:GIT_AUTHOR_DATE="2026-05-07T15:45:00"; $env:GIT_COMMITTER_DATE="2026-05-07T15:45:00"; git commit --allow-empty -m "pattern 5"

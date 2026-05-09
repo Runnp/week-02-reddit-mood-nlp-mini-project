@@ -259,3 +259,109 @@ sk, tf_data, lstm = load_models()
 #         # cleaned text peek
 #         with st.expander("See cleaned text"):
 #             st.code(cleaned)
+
+elif page == "Word explorer":
+    st.title("Word explorer")
+    st.markdown("Explore vocabulary patterns across both communities.")
+
+    if df is not None:
+        tab1, tab2, tab3 = st.tabs(["Top words", "Word shift", "Unique vocab"])
+
+        with tab1:
+            col1, col2 = st.columns(2)
+            with col1:
+                sub = st.selectbox("Subreddit", ["depression","happy"])
+            with col2:
+                n_words = st.slider("Number of words", 10, 40, 20)
+
+            from collections import Counter
+            text   = " ".join(df[df["subreddit"]==sub]["clean_text"].dropna())
+            counts = Counter(text.split()).most_common(n_words)
+            words, freqs = zip(*counts)
+
+            fig, ax = plt.subplots(figsize=(10, 7))
+            ax.barh(words[::-1], freqs[::-1],
+                    color="#E07070" if sub=="depression" else "#7BC67E",
+                    edgecolor="white", linewidth=0.5)
+            ax.set_title(f"r/{sub} — top {n_words} words", fontsize=13)
+            ax.set_xlabel("frequency")
+            ax.spines[["top","right"]].set_visible(False)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+        with tab2:
+            from collections import Counter
+            dep_words = Counter(" ".join(
+                df[df["subreddit"]=="depression"]["clean_text"].dropna()).split())
+            hap_words = Counter(" ".join(
+                df[df["subreddit"]=="happy"]["clean_text"].dropna()).split())
+
+            total_dep = sum(dep_words.values())
+            total_hap = sum(hap_words.values())
+            all_words = set(dep_words.keys()) | set(hap_words.keys())
+
+            shifts = []
+            for word in all_words:
+                fd = dep_words.get(word,0) / total_dep
+                fh = hap_words.get(word,0) / total_hap
+                if max(dep_words.get(word,0), hap_words.get(word,0)) >= 5:
+                    shifts.append({"word": word, "shift": fd - fh})
+
+            shift_df = pd.DataFrame(shifts).sort_values("shift", ascending=False)
+            top_n    = st.slider("Words per side", 5, 20, 12)
+            combined = pd.concat([shift_df.head(top_n),
+                                   shift_df.tail(top_n).iloc[::-1]])
+            colors   = ["#E07070" if s > 0 else "#7BC67E"
+                        for s in combined["shift"]]
+
+            fig, ax = plt.subplots(figsize=(10, 9))
+            ax.barh(combined["word"], combined["shift"],
+                    color=colors, edgecolor="white", linewidth=0.5)
+            ax.axvline(0, color="#cccccc", linewidth=0.8)
+            ax.set_title("Word shift — depression vs happy", fontsize=13)
+            ax.set_xlabel("← more in r/happy       more in r/depression →")
+            ax.spines[["top","right"]].set_visible(False)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+        with tab3:
+            dep_set  = set(dep_words.keys()) if "dep_words" in dir() else set(
+                " ".join(df[df["subreddit"]=="depression"]["clean_text"].dropna()).split())
+            hap_set  = set(hap_words.keys()) if "hap_words" in dir() else set(
+                " ".join(df[df["subreddit"]=="happy"]["clean_text"].dropna()).split())
+
+            from collections import Counter
+            dep_counter = Counter(" ".join(
+                df[df["subreddit"]=="depression"]["clean_text"].dropna()).split())
+            hap_counter = Counter(" ".join(
+                df[df["subreddit"]=="happy"]["clean_text"].dropna()).split())
+            dep_set = set(dep_counter.keys())
+            hap_set = set(hap_counter.keys())
+
+            only_dep = dep_set - hap_set
+            only_hap = hap_set - dep_set
+            shared   = dep_set & hap_set
+
+            col_a, col_b, col_c = st.columns(3)
+            col_a.metric("Only in r/depression", len(only_dep))
+            col_b.metric("Only in r/happy",      len(only_hap))
+            col_c.metric("Shared",               len(shared))
+
+            st.divider()
+            col_d, col_e = st.columns(2)
+            with col_d:
+                st.markdown("**Top unique depression words:**")
+                top_dep_unique = sorted(
+                    {w: dep_counter[w] for w in only_dep}.items(),
+                    key=lambda x: -x[1])[:15]
+                for w, c in top_dep_unique:
+                    st.markdown(f"- `{w}` ({c})")
+            with col_e:
+                st.markdown("**Top unique happy words:**")
+                top_hap_unique = sorted(
+                    {w: hap_counter[w] for w in only_hap}.items(),
+                    key=lambda x: -x[1])[:15]
+                for w, c in top_hap_unique:
+                    st.markdown(f"- `{w}` ({c})")
+    else:
+        st.warning("No data found.")
