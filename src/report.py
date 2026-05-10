@@ -151,6 +151,9 @@ def run_report():
     "11_classifier_sklearn", "12_tensorflow", "13_predict",
     "14_lstm", "15_model_comparison", "16_temporal_classifier",
     "17_summary", "18_misclassified", "19_confidence",
+    "20_wordshift", "21_post_length_over_time", "22_ngram_analysis",
+    "23_subreddit_profile", "24_extreme_posts", "25_readability",
+    "26_monthly_keywords", "27_text_stats", "28_final_insights",
     ]
     for nb in notebooks:
         path = f"notebooks/{nb}.ipynb"

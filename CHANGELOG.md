@@ -76,3 +76,26 @@ Format: Push number — description — date.
 | 55 | text_stats.py |
 | 56 | 27_text_stats.ipynb |
 | 57 | docs/CHANGELOG.md |
+
+files = [
+    ("data/raw/posts_raw.csv",            "Raw posts CSV"),
+    ("data/clean/posts_clean.csv",        "Clean posts CSV"),
+    ("data/clean/posts_sentiment.csv",    "Sentiment CSV"),
+    ("data/clean/train_test_split.pkl",   "Train/test split"),
+    ("data/clean/best_sklearn_model.pkl", "sklearn model"),
+    ("data/clean/tf_tokenizer.pkl",       "TF tokenizer"),
+    ("data/clean/tf_mood_model",          "TF embedding model"),
+    ("data/clean/lstm_mood_model",        "LSTM model"),
+    ("src/config.py",                     "config.py"),
+    ("src/utils.py",                      "utils.py"),
+    ("src/preprocess.py",                 "preprocess.py"),
+    ("src/analysis.py",                   "analysis.py"),
+    ("src/compare.py",                    "compare.py"),
+    ("src/mock_data.py",                  "mock_data.py"),
+    ("src/report.py",                     "report.py"),
+    ("src/visualize.py",                  "visualize.py"),
+    ("src/logger.py",                     "logger.py"),
+    ("src/sentiment_utils.py",            "sentiment_utils.py"),
+    ("src/text_stats.py",                 "text_stats.py"),
+    ("app/streamlit_app.py",              "streamlit app"),
+]
