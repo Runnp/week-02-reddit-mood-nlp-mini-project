@@ -365,3 +365,100 @@ elif page == "Word explorer":
                     st.markdown(f"- `{w}` ({c})")
     else:
         st.warning("No data found.")
+
+#page = st.sidebar.radio("Navigate", [
+    "Overview",
+    "Mood over time",
+    "Word explorer",
+    "Themes",
+    "Live predictor",
+])
+
+elif page == "Themes":
+    st.title("Theme analysis")
+    st.markdown("How often do key themes appear across both communities?")
+
+    if df is not None:
+        THEMES = {
+            "support":  ["help","support","friend","together","community","care","listen"],
+            "venting":  ["tired","hate","angry","frustrated","sick","done","vent"],
+            "advice":   ["advice","suggest","recommend","try","tips","idea","should"],
+            "recovery": ["better","improve","progress","recover","hope","healing","sober"],
+            "crisis":   ["crisis","harm","hurt","die","end","helpline","emergency"],
+        }
+
+        def tag_themes(text, themes):
+            if not isinstance(text, str):
+                return {t: 0 for t in themes}
+            words = set(text.lower().split())
+            return {theme: int(bool(words & set(kws)))
+                    for theme, kws in themes.items()}
+
+        theme_cols = pd.json_normalize(
+            df["clean_text"].apply(lambda t: tag_themes(t, THEMES))
+        )
+        theme_cols.index = df.index
+        df_t = pd.concat([df, theme_cols], axis=1)
+
+        # overall hit rates
+        st.subheader("Theme hit rates")
+        col1, col2 = st.columns(2)
+        colors_sub = {"depression": "#E07070", "happy": "#7BC67E"}
+
+        for col, sub in zip([col1, col2], ["depression","happy"]):
+            with col:
+                st.markdown(f"**r/{sub}**")
+                means = df_t[df_t["subreddit"]==sub][list(THEMES.keys())].mean()
+                fig, ax = plt.subplots(figsize=(5, 3))
+                ax.barh(means.index[::-1], means.values[::-1],
+                        color=colors_sub[sub], edgecolor="white", linewidth=0.5)
+                ax.set_xlabel("hit rate")
+                ax.spines[["top","right"]].set_visible(False)
+                plt.tight_layout()
+                st.pyplot(fig)
+
+        st.divider()
+
+        # heatmap by month
+        st.subheader("Theme intensity by month")
+        sub_sel = st.selectbox("Subreddit", ["depression","happy"])
+
+        import seaborn as sns
+        heat = (
+            df_t[df_t["subreddit"]==sub_sel]
+            .groupby("month")[list(THEMES.keys())]
+            .mean()
+        )
+        fig, ax = plt.subplots(figsize=(13, 4))
+        sns.heatmap(heat.T, annot=True, fmt=".2f",
+                    cmap="YlOrRd" if sub_sel=="depression" else "YlGn",
+                    linewidths=0.4, ax=ax, cbar_kws={"shrink":0.6})
+        ax.set_title(f"r/{sub_sel} — theme intensity by month", fontsize=13)
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
+        plt.tight_layout()
+        st.pyplot(fig)
+
+        st.divider()
+
+        # theme comparison bar
+        st.subheader("Side by side comparison")
+        theme_means = df_t.groupby("subreddit")[list(THEMES.keys())].mean()
+        import numpy as np
+        x     = np.arange(len(THEMES))
+        width = 0.35
+        fig, ax = plt.subplots(figsize=(11, 4))
+        ax.bar(x - width/2, theme_means.loc["depression"],
+               width, label="r/depression", color="#E07070",
+               edgecolor="white", linewidth=0.5)
+        ax.bar(x + width/2, theme_means.loc["happy"],
+               width, label="r/happy", color="#7BC67E",
+               edgecolor="white", linewidth=0.5)
+        ax.set_xticks(x)
+        ax.set_xticklabels(list(THEMES.keys()), fontsize=11)
+        ax.set_ylabel("avg hit rate")
+        ax.legend(frameon=False)
+        ax.spines[["top","right"]].set_visible(False)
+        plt.tight_layout()
+        st.pyplot(fig)
+    else:
+        st.warning("No data found.")
