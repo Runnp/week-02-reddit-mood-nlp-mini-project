@@ -462,3 +462,70 @@ elif page == "Themes":
         st.pyplot(fig)
     else:
         st.warning("No data found.")
+
+page = st.sidebar.radio("Navigate", [
+    "Overview",
+    "Mood over time",
+    "Word explorer",
+    "Themes",
+    "Similarity",
+    "Live predictor",
+])
+
+elif page == "Similarity":
+    st.title("Community similarity")
+    st.markdown("How linguistically close are the two communities?")
+
+    if df is not None:
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+        import seaborn as sns
+        import numpy as np
+
+        docs = {}
+        for sub in ["depression","happy"]:
+            docs[sub] = " ".join(
+                df[df["subreddit"]==sub]["clean_text"].dropna())
+        for mood in ["positive","neutral","negative"]:
+            docs[f"mood_{mood}"] = " ".join(
+                df[df["mood_label"]==mood]["clean_text"].dropna())
+
+        labels = list(docs.keys())
+        vec    = TfidfVectorizer(max_features=3000, min_df=2)
+        matrix = vec.fit_transform(list(docs.values()))
+        sim    = cosine_similarity(matrix)
+        sim_df = pd.DataFrame(sim, index=labels, columns=labels)
+
+        # heatmap
+        st.subheader("Cosine similarity matrix")
+        mask = np.eye(len(labels), dtype=bool)
+        fig, ax = plt.subplots(figsize=(8, 6))
+        sns.heatmap(sim_df, annot=True, fmt=".2f", cmap="coolwarm",
+                    center=0.5, linewidths=0.5, mask=mask,
+                    ax=ax, cbar_kws={"shrink":0.6})
+        plt.xticks(rotation=45, ha="right")
+        plt.yticks(rotation=0)
+        plt.tight_layout()
+        st.pyplot(fig)
+
+        st.divider()
+
+        # key scores
+        st.subheader("Key similarity scores")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("depression vs happy",
+                    f"{sim_df.loc['depression','happy']:.3f}")
+        col2.metric("depression vs mood_negative",
+                    f"{sim_df.loc['depression','mood_negative']:.3f}")
+        col3.metric("happy vs mood_positive",
+                    f"{sim_df.loc['happy','mood_positive']:.3f}")
+
+        dep_hap = sim_df.loc["depression","happy"]
+        if dep_hap < 0.4:
+            st.info("The two communities use quite different language.")
+        elif dep_hap < 0.6:
+            st.info("The communities share some vocabulary but differ meaningfully.")
+        else:
+            st.info("The communities overlap more than expected linguistically.")
+    else:
+        st.warning("No data found.")
