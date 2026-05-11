@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from emotion_tool.analyzer import analyze
-from emotion_tool.charts import full_dashboard
+from emotions.analyzer import analyze
+from emotions.charts import full_dashboard
 
 def run_cli():
     print("\n=== Emotion Illustration Tool ===")

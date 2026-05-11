@@ -4,8 +4,8 @@ import numpy as np
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from emotion_tool.analyzer import analyze, score_emotions, score_sentence_sentiment
-from emotion_tool.config import EMOTIONS, EMOTION_COLORS
+from emotions.analyzer import analyze, score_emotions, score_sentence_sentiment
+from emotions.config import EMOTIONS, EMOTION_COLORS
 
 def score_emotions_fast(text):
     """Faster version — no full analysis, just emotion scores."""
