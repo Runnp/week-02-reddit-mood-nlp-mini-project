@@ -1,4 +1,4 @@
-from emotion_tool.analyzer import analyze
-from emotion_tool.charts import full_dashboard
+from emotions.analyzer import analyze
+from emotions.charts import full_dashboard
 
 __all__ = ["analyze", "full_dashboard"]
