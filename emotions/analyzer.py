@@ -3,7 +3,7 @@ import nltk
 import numpy as np
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import sent_tokenize, word_tokenize
-from emotion_tool.config import EMOTIONS, POSITIVE_THRESH, NEGATIVE_THRESH
+from emotions.config import EMOTIONS, POSITIVE_THRESH, NEGATIVE_THRESH
 
 sia = SentimentIntensityAnalyzer()
 
