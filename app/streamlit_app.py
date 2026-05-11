@@ -260,7 +260,7 @@ sk, tf_data, lstm = load_models()
 #         with st.expander("See cleaned text"):
 #             st.code(cleaned)
 
-elif page == "Word explorer":
+if page == "Word explorer":
     st.title("Word explorer")
     st.markdown("Explore vocabulary patterns across both communities.")
 
@@ -366,14 +366,6 @@ elif page == "Word explorer":
     else:
         st.warning("No data found.")
 
-#page = st.sidebar.radio("Navigate", [
-    "Overview",
-    "Mood over time",
-    "Word explorer",
-    "Themes",
-    "Live predictor",
-])
-
 elif page == "Themes":
     st.title("Theme analysis")
     st.markdown("How often do key themes appear across both communities?")
@@ -463,15 +455,6 @@ elif page == "Themes":
     else:
         st.warning("No data found.")
 
-page = st.sidebar.radio("Navigate", [
-    "Overview",
-    "Mood over time",
-    "Word explorer",
-    "Themes",
-    "Similarity",
-    "Live predictor",
-])
-
 elif page == "Similarity":
     st.title("Community similarity")
     st.markdown("How linguistically close are the two communities?")
@@ -529,3 +512,90 @@ elif page == "Similarity":
             st.info("The communities overlap more than expected linguistically.")
     else:
         st.warning("No data found.")
+
+elif page == "Emotion tool":
+    st.title("Emotion illustration tool")
+    st.markdown("Paste any text and see its emotional arc rendered as charts.")
+
+    import sys
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+    from emotion_tool.analyzer import analyze
+    from emotion_tool.charts import (sadness_chart, happiness_chart,
+                                      emotion_bars, compound_arc,
+                                      emotion_radar)
+
+    user_text = st.text_area("Paste your text here", height=180,
+                              placeholder="Write anything — a journal entry, a message, a few sentences...")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        show_sadness   = st.checkbox("Sadness arc",    value=True)
+        show_happiness = st.checkbox("Happiness arc",  value=True)
+    with col2:
+        show_compound  = st.checkbox("Sentiment arc",  value=True)
+        show_radar     = st.checkbox("Emotion radar",  value=True)
+
+    if st.button("Analyse", type="primary") and user_text.strip():
+        result = analyze(user_text)
+
+        # summary metrics
+        st.divider()
+        col_a, col_b, col_c, col_d = st.columns(4)
+        col_a.metric("Overall mood",      result["overall_mood"].upper())
+        col_b.metric("Dominant emotion",  result["dominant"].upper())
+        col_c.metric("Word count",        result["word_count"])
+        col_d.metric("Sentences",         len(result["sentences"]))
+
+        st.divider()
+
+        if show_compound:
+            st.subheader("Sentiment arc")
+            fig, ax = plt.subplots(figsize=(12, 3))
+            compound_arc(result, ax=ax)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+        col_left, col_right = st.columns(2)
+
+        if show_sadness:
+            with col_left:
+                st.subheader("Sadness arc")
+                fig, ax = plt.subplots(figsize=(7, 4))
+                sadness_chart(result, ax=ax)
+                plt.tight_layout()
+                st.pyplot(fig)
+
+        if show_happiness:
+            with col_right:
+                st.subheader("Happiness arc")
+                fig, ax = plt.subplots(figsize=(7, 4))
+                happiness_chart(result, ax=ax)
+                plt.tight_layout()
+                st.pyplot(fig)
+
+        st.divider()
+
+        col_e, col_f = st.columns(2)
+        with col_e:
+            st.subheader("Emotion scores")
+            fig, ax = plt.subplots(figsize=(6, 4))
+            emotion_bars(result, ax=ax)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+        if show_radar:
+            with col_f:
+                st.subheader("Emotion radar")
+                fig, ax = plt.subplots(figsize=(5, 5),
+                                        subplot_kw=dict(polar=True))
+                emotion_radar(result, ax=ax)
+                plt.tight_layout()
+                st.pyplot(fig)
+
+        # sentence breakdown
+        st.divider()
+        st.subheader("Sentence breakdown")
+        import pandas as pd
+        sent_df = pd.DataFrame(result["sentences"])
+        sent_df["sentence"] = sent_df["sentence"].str[:80]
+        st.dataframe(sent_df.round(3), use_container_width=True)
