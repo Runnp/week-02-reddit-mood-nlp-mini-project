@@ -1,6 +1,13 @@
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../src"))
+
+# fix paths for both direct run and streamlit multipage
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+APP  = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+SRC  = os.path.abspath(os.path.join(ROOT, "src"))
+
+for p in [ROOT, APP, SRC]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 import streamlit as st
 import pandas as pd
