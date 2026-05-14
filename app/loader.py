@@ -39,6 +39,12 @@ def load_sklearn():
 @st.cache_resource
 def load_lstm():
     """Load LSTM model (requires TensorFlow)."""
+    try:
+        import tensorflow as tf
+    except ImportError:
+        st.warning("⚠️ TensorFlow not installed. LSTM predictions disabled.")
+        return None
+    
     candidates = [
         "data/clean/lstm_mood_model",
         "../data/clean/lstm_mood_model",
@@ -47,9 +53,8 @@ def load_lstm():
     for path in candidates:
         if os.path.exists(path):
             try:
-                import tensorflow as tf
                 return tf.keras.models.load_model(path)
-            except Exception:
+            except Exception as e:
                 return None
     return None
 

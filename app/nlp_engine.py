@@ -38,8 +38,10 @@ class NLPEngine:
         if self.lstm is None or self.tokenizer_data is None:
             return None
 
-        import tensorflow as tf
-        from tensorflow.keras.preprocessing.sequence import pad_sequences
+        try:
+            from tensorflow.keras.preprocessing.sequence import pad_sequences
+        except ImportError:
+            return None
 
         cleaned = self.preprocess(text)
 
