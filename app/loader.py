@@ -7,8 +7,24 @@ import pandas as pd
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../src"))
 
+# ── Data Loading Functions ────────────────────────
+
+@st.cache_data
+def load_data():
+    """Load main dataset from CSV."""
+    candidates = [
+        "data/clean/posts_sentiment.csv",
+        "../data/clean/posts_sentiment.csv",
+        os.path.join(os.path.dirname(__file__), "../data/clean/posts_sentiment.csv"),
+    ]
+    for path in candidates:
+        if os.path.exists(path):
+            return pd.read_csv(path)
+    return None
+
 @st.cache_resource
 def load_sklearn():
+    """Load sklearn model (LR/RF)."""
     candidates = [
         "data/clean/best_sklearn_model.pkl",
         "../data/clean/best_sklearn_model.pkl",
@@ -22,6 +38,7 @@ def load_sklearn():
 
 @st.cache_resource
 def load_lstm():
+    """Load LSTM model (requires TensorFlow)."""
     candidates = [
         "data/clean/lstm_mood_model",
         "../data/clean/lstm_mood_model",
@@ -29,12 +46,16 @@ def load_lstm():
     ]
     for path in candidates:
         if os.path.exists(path):
-            import tensorflow as tf
-            return tf.keras.models.load_model(path)
+            try:
+                import tensorflow as tf
+                return tf.keras.models.load_model(path)
+            except Exception:
+                return None
     return None
 
 @st.cache_resource
 def load_tokenizer():
+    """Load TensorFlow tokenizer."""
     candidates = [
         "data/clean/tf_tokenizer.pkl",
         "../data/clean/tf_tokenizer.pkl",
@@ -46,53 +67,26 @@ def load_tokenizer():
                 return pickle.load(f)
     return None
 
-@st.cache_data
-def load_data():
-    candidates = [
-        "data/clean/posts_sentiment.csv",
-        "../data/clean/posts_sentiment.csv",
-        os.path.join(os.path.dirname(__file__), "../data/clean/posts_sentiment.csv"),
-    ]
-    for path in candidates:
-        if os.path.exists(path):
-            return pd.read_csv(path)
-    return None
-
-@st.cache_resource
-def load_sklearn():
-    path = "data/clean/best_sklearn_model.pkl"
-    if not os.path.exists(path):
-        return None
-    with open(path, "rb") as f:
-        return pickle.load(f)
-
-@st.cache_resource
-def load_lstm():
-    path = "data/clean/lstm_mood_model"
-    if not os.path.exists(path):
-        return None
-    import tensorflow as tf
-    return tf.keras.models.load_model(path)
-
-@st.cache_resource
-def load_tokenizer():
-    path = "data/clean/tf_tokenizer.pkl"
-    if not os.path.exists(path):
-        return None
-    with open(path, "rb") as f:
-        return pickle.load(f)
-
-def load_all():
+def load_models():
+    """Load all ML models and tokenizer."""
     return {
-        "df":        load_data(),
-        "sk":        load_sklearn(),
-        "lstm":      load_lstm(),
+        "sklearn": load_sklearn(),
+        "lstm": load_lstm(),
         "tokenizer": load_tokenizer(),
     }
 
-def data_missing(df):
-    if df is None:
-        st.warning("No dataset found.")
+def load_models():
+    """Load all ML models and tokenizer."""
+    return {
+        "sklearn": load_sklearn(),
+        "lstm": load_lstm(),
+        "tokenizer": load_tokenizer(),
+    }
+
+def data_missing_warning():
+    """Display warning when data is not loaded."""
+    if True:
+        st.warning("📦 No dataset found. Generate or fetch data first.")
         col1, col2 = st.columns(2)
         with col1:
             st.code("python src/mock_data.py", language="bash")
@@ -101,17 +95,3 @@ def data_missing(df):
             st.code("jupyter notebook\n# then run 01_fetch + 02_clean",
                     language="bash")
             st.caption("Or fetch real Reddit data")
-        st.stop()
-
-@st.cache_data
-def load_data():
-    # try multiple paths so it works from any working directory
-    candidates = [
-        "data/clean/posts_sentiment.csv",
-        "../data/clean/posts_sentiment.csv",
-        os.path.join(os.path.dirname(__file__), "../data/clean/posts_sentiment.csv"),
-    ]
-    for path in candidates:
-        if os.path.exists(path):
-            return pd.read_csv(path)
-    return None

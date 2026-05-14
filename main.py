@@ -151,20 +151,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-from app.style import mood_badge, page_header
-
-page_header(
-    "Reddit Mood Shift NLP",
-    "A two-week NLP study comparing emotional language across **r/depression** and **r/happy**."
-)
-
-col1, col2, col3 = st.columns(3)
-col1.info("**📊 Dataset Story**\nDistributions, balance, and raw data overview.")
-col2.info("**📈 Emotion Trends**\nMood over time, shift index, volatility.")
-col3.info("**🔤 Word Insights**\nTop words, word shift, vocab overlap.")
-
-col4, col5, col6 = st.columns(3)
-col4.info("**🧠 NLP Engine**\nLive mood prediction — sklearn + LSTM.")
-col5.info("**🎭 Emotion Tool**\nSentence-level emotional arc charts.")
-col6.info("**⚖️ Compare Texts**\nSide by side emotional profile comparison.")

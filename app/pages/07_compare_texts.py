@@ -11,8 +11,8 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from emotion_tool.analyzer import analyze
-from emotion_tool.config import EMOTION_COLORS
+from emotions.analyzer import analyze
+from emotions.config import EMOTION_COLORS
 
 st.set_page_config(page_title="Compare Texts", page_icon="⚖️", layout="wide")
 st.title("⚖️ Compare Two Texts")
