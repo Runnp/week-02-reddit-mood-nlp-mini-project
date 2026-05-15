@@ -151,3 +151,29 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+st.subheader("Pages")
+
+col1, col2, col3 = st.columns(3)
+col1.info("**📊 Dataset Story**\nDistributions, balance, raw data overview.")
+col2.info("**📈 Emotion Trends**\nMood over time, shift index, volatility.")
+col3.info("**🔤 Word Insights**\nTop words, word shift, vocab overlap.")
+
+col4, col5, col6 = st.columns(3)
+col4.info("**🧠 NLP Engine**\nLive mood prediction — sklearn + LSTM.")
+col5.info("**🎭 Emotion Tool**\nSentence-level emotional arc charts.")
+col6.info("**⚖️ Compare Texts**\nSide by side emotional comparison.")
+
+col7, col8, col9 = st.columns(3)
+col7.info("**🔗 Reddit Fetch**\nConnect API and pull live posts.")
+col8.info("**⚡ Live Stats**\nReal-time dataset and file health.")
+col9.info("**⚙️ Settings**\nThresholds, display, cache control.")
+
+st.divider()
+
+st.subheader("Project status")
+import os
+col_a, col_b, col_c = st.columns(3)
+col_a.metric("Notebooks",   "31")
+col_b.metric("App pages",   "10")
+col_c.metric("src modules", len([f for f in os.listdir("src") if f.endswith(".py")]) if os.path.exists("src") else 0)

@@ -76,6 +76,10 @@ Format: Push number — description — date.
 | 55 | text_stats.py |
 | 56 | 27_text_stats.ipynb |
 | 57 | docs/CHANGELOG.md |
+| 83 | pages/08_reddit_fetch.py — live fetch UI |
+| 84 | pages/09_live_stats.py — real-time health |
+| 85 | pages/10_settings.py — app settings |
+| 86 | app/main.py updated, CHANGELOG current |
 
 files = [
     ("data/raw/posts_raw.csv",            "Raw posts CSV"),
