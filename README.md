@@ -1,5 +1,7 @@
 # week-02-reddit-mood-shift-nlp
 
+> **Status:** Week 2 complete — 89 pushes · 31 notebooks · 11 app pages · 3 trained models
+
 A Python + Jupyter NLP project that tracks how emotional tone shifts over time in r/depression and r/happy — then builds a mood classifier using TF-IDF and TensorFlow.
 
 Built as a 2-week learning project exploring classical NLP, sentiment analysis, and introductory deep learning.
@@ -161,6 +163,5 @@ Run notebooks in order from the `notebooks/` folder:
 ## Author
 Made by Runnp
 Built as Biweek 2 of a personal NLP learning series.
-
 
 

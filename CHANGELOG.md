@@ -80,6 +80,9 @@ Format: Push number — description — date.
 | 84 | pages/09_live_stats.py — real-time health |
 | 85 | pages/10_settings.py — app settings |
 | 86 | app/main.py updated, CHANGELOG current |
+| 87 | pages/11_about.py — project info page |
+| 88 | pages __init__.py, sidebar navigation |
+| 89 | CHANGELOG and README final update |
 
 files = [
     ("data/raw/posts_raw.csv",            "Raw posts CSV"),
