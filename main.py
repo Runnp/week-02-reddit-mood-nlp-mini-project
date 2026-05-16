@@ -177,3 +177,23 @@ col_a, col_b, col_c = st.columns(3)
 col_a.metric("Notebooks",   "31")
 col_b.metric("App pages",   "10")
 col_c.metric("src modules", len([f for f in os.listdir("src") if f.endswith(".py")]) if os.path.exists("src") else 0)
+
+st.sidebar.divider()
+st.sidebar.markdown("**Pages**")
+pages = [
+    ("📊", "Dataset Story"),
+    ("📈", "Emotion Trends"),
+    ("🔤", "Word Insights"),
+    ("🧠", "NLP Engine"),
+    ("🎭", "Emotion Tool"),
+    ("⚖️",  "Compare Texts"),
+    ("🔗", "Reddit Fetch"),
+    ("⚡", "Live Stats"),
+    ("⚙️",  "Settings"),
+    ("ℹ️",  "About"),
+]
+for icon, name in pages:
+    st.sidebar.markdown(f"{icon} {name}")
+
+st.sidebar.divider()
+st.sidebar.caption("week-02-reddit-mood-shift-nlp")
