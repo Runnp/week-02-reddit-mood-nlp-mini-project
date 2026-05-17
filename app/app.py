@@ -397,3 +397,33 @@ elif page == "⚖️ Compare Texts":
 
 if __name__ == "__main__":
     st.write("Streamlit app ready!")
+
+
+from app.loader import load_data as _load_data
+from src.summarizer import one_liner, key_numbers, top_insight, monthly_direction
+import sys, os
+sys.path.insert(0, os.path.abspath("src"))
+from summarizer import one_liner, key_numbers, top_insight, monthly_direction
+
+_df = _load_data()
+if _df is not None:
+    st.subheader("Project snapshot")
+
+    nums = key_numbers(_df)
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Total posts",   nums.get("total_posts",   0))
+    c2.metric("Months",        nums.get("months",        0))
+    c3.metric("Avg depression",f"{nums.get('avg_dep', 0):+.3f}")
+    c4.metric("Avg happy",     f"{nums.get('avg_hap', 0):+.3f}")
+
+    st.info(f"💡 {top_insight(_df)}")
+    st.caption(one_liner(_df))
+
+    trends = monthly_direction(_df)
+    if trends:
+        st.markdown("**Mood trend:**")
+        for sub, direction in trends.items():
+            icon = "📈" if "positive" in direction else "📉" if "negative" in direction else "➡️"
+            st.markdown(f"- r/{sub}: {icon} {direction}")
+
+    st.divider()
