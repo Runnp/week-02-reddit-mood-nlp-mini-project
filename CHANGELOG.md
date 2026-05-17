@@ -83,6 +83,10 @@ Format: Push number — description — date.
 | 87 | pages/11_about.py — project info page |
 | 88 | pages __init__.py, sidebar navigation |
 | 89 | CHANGELOG and README final update |
+| 90 | pages/12_export.py — CSV and chart downloads |
+| 91 | src/summarizer.py — insights and trend detection |
+| 92 | app/main.py wired to summarizer |
+| 93 | CHANGELOG updated, v2.0 tagged |
 
 files = [
     ("data/raw/posts_raw.csv",            "Raw posts CSV"),
